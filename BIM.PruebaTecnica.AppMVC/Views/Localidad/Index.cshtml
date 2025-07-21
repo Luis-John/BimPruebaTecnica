@@ -1,0 +1,101 @@
+﻿@model PaginacionDto<LocalidadByIdUserDto>
+
+@{
+    ViewData["Title"] = "Localidad";
+}
+
+<div class="row">
+    <div class="col-12">
+        <h1>Localidades</h1>
+    </div>
+</div>
+
+
+<div class="row mt-3">
+    <div class="col-2">
+        <label class="form-label">Registros por página:</label>
+        <select asp-for="@Model.RegistrosPorPagina" id="cantidadRegistros" class="form-select">
+            <option>3</option>
+            <option>5</option>
+            <option>10</option>
+        </select>
+    </div>
+    <div class="col-2 offset-lg-8">
+        <a asp-action="Crear" class="btn btn-success mb-3">Agregar localidad</a>
+    </div>
+</div>
+
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Estado</th>
+            <th>Municipio</th>
+            <th>Descripcion de localidad</th>
+            <th>Codigo Postal</th>
+            <th>Fecha de creacion</th>
+            <th class="text-center"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.LstLocalidadByIdUser)
+        {
+            <tr>
+                <td class="text-center">
+                    <a class="btn btn-warning" asp-action="Editar" asp-route-id="@item.Id">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </td>
+                <td>
+                    @item.Estado
+                </td>
+                <td>
+                    @item.Municipio
+                </td>
+                <td>
+                    @item.Descripcion
+                </td>
+                <td class="text-center">
+                    @item.CodigoPostal
+                </td>
+                <td>
+                    @item.CreateDate.ToString("dd/MM/yyyy")
+                </td>
+                <td class="text-center">
+                    <button class="btn btn-danger" onclick="confirmarEliminacion(@item.Id)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<partial name="_Paginacion" />
+
+
+@section Scripts {
+    <script>
+        $("#cantidadRegistros").change(function (){
+            const registroPorPag = $(this).val();
+            location.href = `/Localidad/Index?PaginaActual=1&RegistrosPorPagina=${registroPorPag}`
+        });
+
+
+        function confirmarEliminacion(id) {
+            Swal.fire({
+                title: "¿Estás seguro?",
+                text: "¡No podrás revertir esto!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, eliminar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Localidad/Borrar/' + id;
+                }
+            });
+        }
+    </script>
+}

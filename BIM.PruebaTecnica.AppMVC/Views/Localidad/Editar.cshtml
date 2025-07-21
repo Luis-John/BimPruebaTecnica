@@ -1,0 +1,126 @@
+﻿@model LocalidadViewModel
+    
+@{
+    ViewData["Title"] = "Editar Localidad";
+}
+
+@{
+    var mensaje = TempData["MensajeExito"]?.ToString();
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>Actualizar Localidad</h1>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-12">
+            <a asp-action="Index" class="btn btn-primary mb-3">Ver localidades</a>
+        </div>
+    </div>
+
+    <form asp-action="Editar" method="post" class="container mt-4">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <input type="hidden" asp-for="Id" />
+        <div class="row">
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-3">
+                <div class="form-group">
+                    <label asp-for="IdEstado" class="form-label">Estado</label>
+                    <select asp-for="IdEstado" asp-items="Model.Estados" class="form-select" id="ddlEstados">
+                        <option value="">Seleccione un estado</option>
+                    </select>
+                    <span asp-validation-for="IdEstado" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-12 col-lg-6 mb-3">
+                <div class="form-group">
+                    <label asp-for="IdMunicipio" class="form-label">Municipio</label>
+                    <select asp-for="IdMunicipio" asp-items="Model.Municipios" class="form-select" id="ddlMunicipios">
+                        <option value="">Seleccione un municipio</option>
+                    </select>
+                    <span asp-validation-for="IdMunicipio" class="text-danger"></span>
+                </div>
+
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="mb-3 col-sm-12 col-md-12 col-lg-6">
+                <label asp-for="Descripcion" class="form-label"></label>
+                <textarea asp-for="Descripcion" type="text" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Descripcion" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3 col-sm-12 col-md-12 col-lg-6">
+                <label asp-for="CodigoPostal" class="form-label"></label>
+                <input asp-for="CodigoPostal" class="form-control" />
+                <span asp-validation-for="CodigoPostal" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <div class="d-grid gap-2">
+                    <a class="btn btn-secondary" asp-action="Index">Cancelar</a>
+                </div>
+            </div>
+
+        </div>
+    </form>
+</div>
+
+
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+            function limpiarFormulario() {
+                document.querySelector('form').reset();
+                $('#MunicipioId').empty().append('<option value="">Seleccione un municipio</option>');
+                $('.text-danger').text('');
+            }
+
+            $(document).ready(function () {
+                var urlObtenerMunicipios = '@Url.Action("GetMunicipiosByIdEstado", "Localidad")';
+
+            $("#ddlEstados").change(function () {
+                var estadoId = $(this).val();
+                $("#ddlMunicipios").html('<option>Cargando...</option>');
+
+                $.getJSON(urlObtenerMunicipios, { estadoId: estadoId }, function (data) {
+                    var opciones = '<option value="">Seleccione un municipio</option>';
+                        $.each(data, function (i, item) {
+                        opciones += '<option value="' + item.id + '">' + item.municipio + '</option>';
+                    });
+                    $('#ddlMunicipios').html(opciones);
+                });
+            });
+        });
+    </script>
+
+    @if (!string.IsNullOrEmpty(mensaje))
+    {
+        <script>
+            const Toast = Swal.mixin({
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.onmouseenter = Swal.stopTimer;
+                    toast.onmouseleave = Swal.resumeTimer;
+                }
+            });
+
+            Toast.fire({
+                icon: "success",
+                title: '@mensaje'
+            });
+        </script>
+    }
+}

@@ -1,0 +1,45 @@
+﻿@model PaginacionDto
+
+@{
+    var template = string.Concat(Model.BaseURL, "?PaginaActual={0}&RegistrosPorPagina={1}");
+    var activeBtnAnterior = Model.PaginaActual > 1;
+    var activeBtnSiguiente = Model.PaginaActual < Model.TotalPaginas;
+}
+
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        <li class="page-item @(activeBtnAnterior ? null : "disabled")">
+            @if (activeBtnAnterior)
+            {
+                <a class="page-link" href="@string.Format(template, Model.PaginaActual - 1, Model.RegistrosPorPagina)">
+                 Anterior
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Anterior</span>
+            }
+        </li>
+        @for (int i = 1; i <= Model.TotalPaginas; i++)
+        {
+            <li class="page-item @(i == Model.PaginaActual ? "active" : null)">
+                <a class="page-link" href="@string.Format(template, i, Model.RegistrosPorPagina)">
+                    @i
+                </a>
+            </li>
+        }
+        <li class="page-item @(activeBtnSiguiente ? null : "disabled")">
+            @if (activeBtnSiguiente)
+            {
+                <a class="page-link" href="@string.Format(template, Model.PaginaActual + 1, Model.RegistrosPorPagina)">
+                    Siguiente
+                </a>
+            }
+            else
+            {
+                <span class="page-link">Siguiente</span>
+            }
+        </li>
+        
+    </ul>
+</nav>
